@@ -2,7 +2,7 @@ import Ember from 'ember';
 import DS from 'ember-data';
 import WithLogger from '../mixins/with-logger';
 import SailsSocketAdapter from 'ember-data-sails/adapters/sails-socket';
-import ENV from '../config/environment';
+//import ENV from '../config/environment';
 
 
 var $ = Ember.$;
@@ -29,7 +29,7 @@ var SailsSerializer = DS.RESTSerializer.extend(WithLogger, {
    * @property useSailsEmberBlueprints
    * @type Boolean
    */
-  useSailsEmberBlueprints: ENV.APP.emberDataSails.useSailsEmberBlueprints,
+  useSailsEmberBlueprints: false,//ENV.APP.emberDataSails.useSailsEmberBlueprints,
 
   /**
    * @since 0.0.11
