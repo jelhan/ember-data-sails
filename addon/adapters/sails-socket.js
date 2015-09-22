@@ -118,13 +118,13 @@ export default SailsBaseAdapter.extend({
    * @param {Object} message The message received
    * @private
    */
-  _handleSocketRecordCreated: function (store, type, message) {
+  _handleSocketRecordCreated: function (store, modelName, message) {
     var record = message.data, payload = {};
     if (!record.id && message.id) {
       record.id = message.id;
     }
-    payload[pluralize(camelize(type.modelName))] = [record];
-    store.pushPayload(type.modelName, payload);
+    payload[pluralize(camelize(modelName))] = [record];
+    store.pushPayload(modelName, payload);
   },
 
   /**
@@ -149,8 +149,8 @@ export default SailsBaseAdapter.extend({
    * @param {Object} message The message received
    * @private
    */
-  _handleSocketRecordDeleted: function (store, type, message) {
-    var record = store.getById(type.modelName, message.id);
+  _handleSocketRecordDeleted: function (store, modelName, message) {
+    var record = store.getById(modelName, message.id);
     if (record && typeof record.get('dirtyType') === 'undefined') {
       record.unloadRecord();
     }
@@ -164,17 +164,15 @@ export default SailsBaseAdapter.extend({
    * @param {String} model The model name to listen for events
    * @private
    */
-  _listenToSocket: function (model) {
+  _listenToSocket: function (modelName) {
     var store, type;
-    var eventName = camelize(model).toLowerCase();
+    var eventName = camelize(modelName).toLowerCase();
     var socket = this.sailsSocket;
     if (socket.listenFor(eventName, true)) {
-      this.notice(fmt('setting up adapter to listen for `%@` messages', model));
-      store = this.container.lookup('store:main');
-      type = store.modelFor(model);
-      socket.on(eventName + '.created', bind(this, '_handleSocketRecordCreated', store, type));
-      socket.on(eventName + '.updated', bind(this, '_handleSocketRecordUpdated', store, type));
-      socket.on(eventName + '.destroyed', bind(this, '_handleSocketRecordDeleted', store, type));
+      this.notice(fmt('setting up adapter to listen for `%@` messages', modelName));
+      socket.on(eventName + '.created', bind(this, '_handleSocketRecordCreated', store, modelName));
+      socket.on(eventName + '.updated', bind(this, '_handleSocketRecordUpdated', store, modelName));
+      socket.on(eventName + '.destroyed', bind(this, '_handleSocketRecordDeleted', store, modelName));
     }
   },
 
